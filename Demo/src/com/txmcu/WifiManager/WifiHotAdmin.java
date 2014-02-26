@@ -38,20 +38,20 @@ public class WifiHotAdmin {
 		closeWifiAp(mWifiManager);
 	}
 
-	public void startWifiAp(String wifiName) {
+	public void startWifiAp(String wifiName,String password) {
 		Log.i(TAG, "into startWifiAp（）");
-		stratWifiAp(wifiName);
+		stratWifiAp(wifiName,password);
 	}
 
 	// 啟動一個Wifi 熱點
-	private boolean stratWifiAp(String wifiName) {
+	private boolean stratWifiAp(String wifiName,String password) {
 
 		Log.i(TAG, "into startWifiAp（） 启动一个Wifi 热点！");
 		Method method1 = null;
 		boolean ret = false;
 		try {
 			method1 = mWifiManager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
-			WifiConfiguration apConfig = WifiHotConfigAdmin.createWifiWpaInfo(wifiName, Global.PASSWORD);
+			WifiConfiguration apConfig = WifiHotConfigAdmin.createWifiWpaInfo(wifiName, password);
 					// createPassHotWifiConfig(wifiName, Global.PASSWORD);
 			ret = (Boolean) method1.invoke(mWifiManager, apConfig, true);
 		} catch (IllegalArgumentException e) {

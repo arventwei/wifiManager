@@ -178,13 +178,13 @@ public class WifiHotManager {
 	}
 
 	// 启动wifi一个Wifi热点
-	public void startAWifiHot(String wifiName) {
+	public void startAWifiHot(String wifiName,String password) {
 		Log.i(TAG, "into startAWifiHot(String wifiName) wifiName =" + wifiName);
 		if (mWifimanager.isWifiEnabled()) {
 			mWifimanager.setWifiEnabled(false);
 		}
 		if (wifiApadmin != null) {
-			wifiApadmin.startWifiAp(wifiName);
+			wifiApadmin.startWifiAp(wifiName,password);
 		}
 		Log.i(TAG, "out startAWifiHot(String wifiName)");
 	}

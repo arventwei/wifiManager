@@ -11,8 +11,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.txmcu.WifiManager.Global;
 import com.txmcu.WifiManager.WifiHotManager;
@@ -32,18 +34,31 @@ implements OnClickListener,WifiBroadCastOperations{
 	
 	EditText ssidText;
 	EditText pwdText;
+	
+	TextView apInfoTextView;
 
 	private WifiHotAdapter adapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		setContentView(R.layout.activity_main);
+		
+		wifiHotM = WifiHotManager.getInstance(MainActivity.this, MainActivity.this);
+		
 		
 		ssidText = (EditText)findViewById(R.id.wifi_ssid);
 		pwdText = (EditText)findViewById(R.id.wifi_pwd);
+		apInfoTextView = (TextView)findViewById(R.id.ApInfo);
 		// 热点列表
 		listView = (ListView) findViewById(R.id.wifilist);
+		((Button)findViewById(R.id.createAp)).setOnClickListener(this);
+		((Button)findViewById(R.id.stopAp)).setOnClickListener(this);
+		((Button)findViewById(R.id.connect)).setOnClickListener(this);
+		((Button)findViewById(R.id.disconnect)).setOnClickListener(this);
+		((Button)findViewById(R.id.scan)).setOnClickListener(this);
+		
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -63,18 +78,21 @@ implements OnClickListener,WifiBroadCastOperations{
 	// 扫描热点广播初始化
 	@Override
 	protected void onResume() {
-		wifiHotM = WifiHotManager.getInstance(MainActivity.this, MainActivity.this);
-		wifiHotM.scanWifiHot();
+		
+		//wifiHotM.scanWifiHot();
 		super.onResume();
 	}
 		
 	@Override
 	public void onClick(View v) {
 		if (v.getId()==R.id.createAp) {
+			wifiHotM.startAWifiHot(Global.SSID,Global.PASSWORD);
+			apInfoTextView.setText("SSID:"+Global.SSID+" PWd:"+Global.PASSWORD);
 			
 		}
 		else if (v.getId()==R.id.stopAp) {
-			
+			wifiHotM.disableWifiHot();
+			apInfoTextView.setText("SSID:" +" PWd:");
 		}
 		else if (v.getId()==R.id.connect) {
 			
