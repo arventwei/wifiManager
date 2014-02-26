@@ -8,9 +8,9 @@ public class Global {
 
 	public static int WIFI_CONNECT_FAILED = 2;
 
-	public static String SSID = "YRCCONNECTION";
+	public static String SSID = "WIFI_TEST";
 
-	public static String PASSWORD = "2012110312123";
+	public static String PASSWORD = "1234567890";
 
 	public static int WIFICIPHER_NOPASS = 1;
 

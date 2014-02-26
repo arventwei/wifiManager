@@ -1,22 +1,141 @@
 package com.txmcu.wifimanagerdemo;
 
-import android.os.Bundle;
+import java.util.List;
+
 import android.app.Activity;
-import android.view.Menu;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiInfo;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
+import android.widget.ListView;
 
-public class MainActivity extends Activity {
+import com.txmcu.WifiManager.Global;
+import com.txmcu.WifiManager.WifiHotManager;
+import com.txmcu.WifiManager.WifiHotManager.OpretionsType;
+import com.txmcu.WifiManager.WifiHotManager.WifiBroadCastOperations;
 
+public class MainActivity extends Activity 
+implements OnClickListener,WifiBroadCastOperations{
+
+	
+	private static String TAG = "MainActivity";
+	
+	private WifiHotManager wifiHotM;
+	private List<ScanResult> wifiList;
+	
+	private ListView listView;
+	
+	EditText ssidText;
+	EditText pwdText;
+
+	private WifiHotAdapter adapter;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		ssidText = (EditText)findViewById(R.id.wifi_ssid);
+		pwdText = (EditText)findViewById(R.id.wifi_pwd);
+		// 热点列表
+		listView = (ListView) findViewById(R.id.wifilist);
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				ScanResult result = wifiList.get(position);
+				ssidText.setText(result.SSID);//= result.SSID;
+				//statu.setText("连接中...");
+				//Log.i(TAG, "into  onItemClick() SSID= " + result.SSID);
+				//wifiHotM.connectToHotpot(result.SSID, wifiList, Global.PASSWORD);
+				Log.i(TAG, "out  onItemClick() SSID= " + result.SSID);
+			}
+		});
 	}
 
+	
+	
+	// 扫描热点广播初始化
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+	protected void onResume() {
+		wifiHotM = WifiHotManager.getInstance(MainActivity.this, MainActivity.this);
+		wifiHotM.scanWifiHot();
+		super.onResume();
+	}
+		
+	@Override
+	public void onClick(View v) {
+		if (v.getId()==R.id.createAp) {
+			
+		}
+		else if (v.getId()==R.id.stopAp) {
+			
+		}
+		else if (v.getId()==R.id.connect) {
+			
+		}
+		else if (v.getId()==R.id.disconnect) {
+			
+		}
+		else if (v.getId()==R.id.scan) {
+			wifiHotM.scanWifiHot();
+		}
+	}
+	
+	private void refreshWifiList(List<ScanResult> results) {
+		Log.i(TAG, "into 刷新wifi热点列表");
+		if (null == adapter) {
+			Log.i(TAG, "into 刷新wifi热点列表 adapter is null！");
+			adapter = new WifiHotAdapter(results, this);
+			listView.setAdapter(adapter);
+		} else {
+			Log.i(TAG, "into 刷新wifi热点列表 adapter is not null！");
+			adapter.refreshData(results);
+		}
+		Log.i(TAG, "out 刷新wifi热点列表");
+	}
+	
+	// wifi 热点扫描回调
+	@Override
+	public void disPlayWifiScanResult(List<ScanResult> wifiList) {
+
+		Log.i(TAG, "into 扫描结果回调函数");
+		this.wifiList = wifiList;
+		wifiHotM.unRegisterWifiScanBroadCast();
+		refreshWifiList(wifiList);
+		Log.i(TAG, "out 热点扫描结果 ： = " + wifiList);
+
 	}
 
+	// wifi 连接回调
+	@Override
+	public boolean disPlayWifiConResult(boolean result, WifiInfo wifiInfo) {
+
+		Log.i(TAG, "into 热点连接回调函数");
+		String ip = "";
+		wifiHotM.setConnectStatu(false);
+		wifiHotM.unRegisterWifiStateBroadCast();
+		wifiHotM.unRegisterWifiConnectBroadCast();
+		//initClient(ip);
+		Log.i(TAG, "out 热点链接回调函数");
+		return false;
+	}
+
+	// wifi 热点连接、扫描在Wifi关闭的情况下，回调
+	@Override
+	public void operationByType(OpretionsType type, String SSID) {
+		Log.i(TAG, "into operationByType！type = " + type);
+		if (type == OpretionsType.CONNECT) {
+			wifiHotM.connectToHotpot(SSID, wifiList, Global.PASSWORD);
+		} else if (type == OpretionsType.SCAN) {
+			wifiHotM.scanWifiHot();
+		}
+		Log.i(TAG, "out operationByType！");
+
+	}
 }
