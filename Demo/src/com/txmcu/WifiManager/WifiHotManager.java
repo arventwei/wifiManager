@@ -148,7 +148,9 @@ public class WifiHotManager {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				WifiConfiguration config = WifiHotConfigAdmin.createWifiNoPassInfo(SSID, password);
+				String newSSID = "\"" + SSID + "\"";
+				String newpassword = "\"" + password + "\"";
+				WifiConfiguration config = WifiHotConfigAdmin.createWifiWpaInfo(newSSID, newpassword);
 				isConnecting = connectHotSpot(config);
 				registerWifiConnectBroadCast();
 				mSSID = SSID;
@@ -300,6 +302,6 @@ public class WifiHotManager {
 	}
 
 	public void disconnectWifi(String SSID) {
-		// mWifimanager.disconnect();
+		 mWifimanager.disconnect();
 	}
 }
