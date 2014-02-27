@@ -58,7 +58,7 @@ public class WifiHotManager {
 		 * @param type conntect wifi or scan wifi
 		 * @param SSID wifi 连接时指定的SSID
 		 */
-		public void operationByType(OpretionsType type, String SSID);
+		public void operationByType(OpretionsType type, String SSID,String pWd);
 
 	}
 
@@ -91,7 +91,7 @@ public class WifiHotManager {
 		Log.i(TAG, "into wifiHotScan()");
 		if (!wifiIsOpen()) {
 			Log.i(TAG, "out wifiHotScan() wifi is not open!");
-			registerWifiStateBroadcast("");
+			registerWifiStateBroadcast("","");
 			wifiStateReceiver.setOpType(OpretionsType.SCAN);
 			openWifi();
 		} else {
@@ -102,7 +102,7 @@ public class WifiHotManager {
 	}
 
 	// 连接热点
-	public void connectToHotpot(final String SSID, List<ScanResult> wifiList, final String password) {
+	public void connectToHotpot(final String SSID, final String password) {
 		if (SSID == null || SSID.equals("")) {
 			Log.d(TAG, "WIFI ssid is null or ");
 			return;
@@ -112,13 +112,13 @@ public class WifiHotManager {
 			operations.disPlayWifiConResult(false, null);
 			return;
 		}
-		if (!checkConnectHotIsEnable(SSID, wifiList)) {
-			Log.d(TAG, "ssid is not in the wifiList!");
-			operations.disPlayWifiConResult(false, null);
-			return;
-		}
+//		if (!checkConnectHotIsEnable(SSID, wifiList)) {
+//			Log.d(TAG, "ssid is not in the wifiList!");
+//			operations.disPlayWifiConResult(false, null);
+//			return;
+//		}
 		if (!wifiIsOpen()) {
-			registerWifiStateBroadcast(SSID);
+			registerWifiStateBroadcast(SSID,password);
 			wifiStateReceiver.setOpType(OpretionsType.CONNECT);
 			openWifi();
 		} else {
@@ -218,10 +218,10 @@ public class WifiHotManager {
 	}
 
 	// 注册wifi 状态监听广播
-	private void registerWifiStateBroadcast(String SSID) {
+	private void registerWifiStateBroadcast(String SSID,String pwdString) {
 		IntentFilter filter = new IntentFilter();
 		if (wifiStateReceiver == null) {
-			wifiStateReceiver = new WifiStateBroadCast(operations, SSID);
+			wifiStateReceiver = new WifiStateBroadCast(operations, SSID,pwdString);
 		}
 		filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 		context.registerReceiver(wifiStateReceiver, filter);

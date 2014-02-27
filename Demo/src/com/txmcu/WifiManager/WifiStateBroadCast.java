@@ -16,11 +16,12 @@ public class WifiStateBroadCast extends BroadcastReceiver {
 	private OpretionsType type;
 
 	private String SSID;
-
-	public WifiStateBroadCast(WifiBroadCastOperations operations, String SSID) {
+    private String pWDString;
+	public WifiStateBroadCast(WifiBroadCastOperations operations, String SSID,String pwd) {
 
 		this.operations = operations;
 		this.SSID = SSID;
+		this.pWDString = pwd;
 	}
 
 	public void setOpType(OpretionsType type) {
@@ -39,7 +40,7 @@ public class WifiStateBroadCast extends BroadcastReceiver {
 				break;
 			case WifiManager.WIFI_STATE_ENABLED:
 				if (type != null) {
-					operations.operationByType(type, SSID);
+					operations.operationByType(type, SSID,pWDString);
 				}
 				break;
 			}

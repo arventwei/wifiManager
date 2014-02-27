@@ -95,10 +95,10 @@ implements OnClickListener,WifiBroadCastOperations{
 			apInfoTextView.setText("SSID:" +" PWd:");
 		}
 		else if (v.getId()==R.id.connect) {
-			
+			wifiHotM.connectToHotpot(ssidText.getText().toString(),  pwdText.getText().toString());
 		}
 		else if (v.getId()==R.id.disconnect) {
-			
+			wifiHotM.disconnectWifi(ssidText.getText().toString());
 		}
 		else if (v.getId()==R.id.scan) {
 			wifiHotM.scanWifiHot();
@@ -146,10 +146,10 @@ implements OnClickListener,WifiBroadCastOperations{
 
 	// wifi 热点连接、扫描在Wifi关闭的情况下，回调
 	@Override
-	public void operationByType(OpretionsType type, String SSID) {
+	public void operationByType(OpretionsType type, String SSID,String pwd) {
 		Log.i(TAG, "into operationByType！type = " + type);
 		if (type == OpretionsType.CONNECT) {
-			wifiHotM.connectToHotpot(SSID, wifiList, Global.PASSWORD);
+			wifiHotM.connectToHotpot(SSID,  pwd);
 		} else if (type == OpretionsType.SCAN) {
 			wifiHotM.scanWifiHot();
 		}
