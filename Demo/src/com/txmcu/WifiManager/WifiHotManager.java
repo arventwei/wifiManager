@@ -98,17 +98,21 @@ public class WifiHotManager {
 				//capabilities
 				//existingConfig.
 			//	existingConfig.allowedAuthAlgorithms.get(index)
-				if (existingConfig.allowedAuthAlgorithms.get(WifiConfiguration.AuthAlgorithm.OPEN)
-					&&existingConfig.allowedProtocols.get(WifiConfiguration.Protocol.RSN)) {
+				Log.d(TAG, "allowedAuthAlgorithms"+existingConfig.allowedAuthAlgorithms.toString());
+				Log.d(TAG, "allowedProtocols"+existingConfig.allowedProtocols.toString());
+				Log.d(TAG, "allowedPairwiseCiphers"+existingConfig.allowedPairwiseCiphers.toString());
+				Log.d(TAG, "allowedGroupCiphers"+existingConfig.allowedGroupCiphers.toString());
+				Log.d(TAG, "allowedKeyManagement"+existingConfig.allowedKeyManagement.toString());
+				if (existingConfig.allowedProtocols.get(WifiConfiguration.Protocol.RSN)) {
 					ret.set(0, "WPA2PSK");
 				}
-				else if (existingConfig.allowedAuthAlgorithms.get(WifiConfiguration.AuthAlgorithm.OPEN)
-						&&existingConfig.allowedProtocols.get(WifiConfiguration.Protocol.WPA)) {
+				else if (existingConfig.allowedProtocols.get(WifiConfiguration.Protocol.WPA)) {
 						ret.set(0, "WPAPSK");
 					}
 				else if (existingConfig.allowedAuthAlgorithms.get(WifiConfiguration.AuthAlgorithm.SHARED)
 					) {
-						ret.set(0, "WEP");
+						ret.set(0, "SHARED");
+						ret.set(1, "WEP");
 					}
 				if (existingConfig.allowedPairwiseCiphers.get(WifiConfiguration.PairwiseCipher.CCMP)
 						) {
@@ -118,10 +122,11 @@ public class WifiHotManager {
 						) {
 					ret.set(1, "TKIP");
 				}
-				else if (existingConfig.allowedGroupCiphers.get(WifiConfiguration.GroupCipher.WEP104)
-						||existingConfig.allowedGroupCiphers.get(WifiConfiguration.GroupCipher.WEP40)) {
-							ret.set(1, "WEP");
-						}
+				if (existingConfig.allowedKeyManagement.get(WifiConfiguration.KeyMgmt.NONE)
+						) {
+					ret.set(0, "OPEN");
+					ret.set(1, "None");
+				}
 		
 			}
 		}
