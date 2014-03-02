@@ -214,7 +214,7 @@ public class WifiHotManager {
 				String newpassword = "\"" + password + "\"";
 				WifiConfiguration config = WifiHotConfigAdmin.createWifiWpaInfo(newSSID, newpassword);
 				isConnecting = connectHotSpot(config);
-				registerWifiConnectBroadCast();
+				registerWifiConnectBroadCast(SSID);
 				mSSID = SSID;
 				if (!isConnecting) {
 					operations.disPlayWifiConResult(false, null);
@@ -303,12 +303,13 @@ public class WifiHotManager {
 	}
 
 	// 娉ㄥ唽wifi鐑偣杩炴帴骞挎挱
-	private void registerWifiConnectBroadCast() {
+	private void registerWifiConnectBroadCast(String SSID) {
 		if (wifiConnectReceiver == null) {
-			wifiConnectReceiver = new WifiConnectBroadCast(operations);
+			wifiConnectReceiver = new WifiConnectBroadCast(operations,SSID);
 		}
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+		filter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
 		context.registerReceiver(wifiConnectReceiver, filter);
 	}
 

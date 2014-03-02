@@ -16,14 +16,18 @@ public class WifiConnectBroadCast extends BroadcastReceiver {
 	private WifiBroadCastOperations operations;
 
 	private WifiManager wifiManager;
+	private String sSID;
 
-	public WifiConnectBroadCast(WifiBroadCastOperations operations) {
+	public WifiConnectBroadCast(WifiBroadCastOperations operations,String SSID) {
 
 		this.operations = operations;
+		this.sSID = SSID;
 	}
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		
+		
 		if (WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(intent.getAction())) {
 			Parcelable parcelableExtra = intent.getParcelableExtra(WifiManager.EXTRA_NETWORK_INFO);
 			if (null != parcelableExtra) {
@@ -31,29 +35,35 @@ public class WifiConnectBroadCast extends BroadcastReceiver {
 				wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
 				WifiInfo wifiInfo = wifiManager.getConnectionInfo();
 				String SSID = wifiInfo.getSSID();
+				
 				switch (networkInfo.getState()) {
 				case CONNECTED:
 					Log.e("APActivity", "CONNECTED");
-					if (SSID.contains(Global.SSID)) {
+					//if (SSID.contains(sSID)) {
 						operations.disPlayWifiConResult(true, wifiInfo);
-					} else {
-						operations.disPlayWifiConResult(false, wifiInfo);
-					}
+					//} else {
+					//	operations.disPlayWifiConResult(false, wifiInfo);
+					//}
 					break;
 				case CONNECTING:
 					Log.e("APActivity", "CONNECTING");
+					operations.disPlayWifiConResult(false, wifiInfo);
 					break;
 				case DISCONNECTED:
 					Log.e("APActivity", "DISCONNECTED");
+					operations.disPlayWifiConResult(false, wifiInfo);
 					break;
 				case DISCONNECTING:
 					Log.e("APActivity", "DISCONNECTING");
+					operations.disPlayWifiConResult(false, wifiInfo);
 					break;
 				case SUSPENDED:
 					Log.e("APActivity", "SUSPENDED");
+					operations.disPlayWifiConResult(false, wifiInfo);
 					break;
 				case UNKNOWN:
 					Log.e("APActivity", "UNKNOWN");
+					operations.disPlayWifiConResult(false, wifiInfo);
 					break;
 				default:
 					break;

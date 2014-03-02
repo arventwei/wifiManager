@@ -84,7 +84,7 @@
             android:layout_weight="0.5"
             android:ems="10"
             android:inputType="textPassword"
-            android:text="txmcu" >
+            android:text="fengjienihao" >
 
             <requestFocus />
         </EditText>
@@ -168,15 +168,13 @@
             android:id="@+id/connect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="connect"
-            android:visibility="gone" />
+            android:text="connect"/>
 
         <Button
             android:id="@+id/disconnect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="disconnect"
-            android:visibility="gone" />
+            android:text="disconnect"/>
 
         <Button
             android:id="@+id/scan"

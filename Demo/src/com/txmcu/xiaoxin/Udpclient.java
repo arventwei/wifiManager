@@ -1,9 +1,11 @@
-package com.txmcu.wifimanagerdemo;
+package com.txmcu.xiaoxin;
+
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import android.R.integer;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -12,7 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 //import android.widget.Toast;
 
-public class udpclient {
+public class Udpclient {
 	
 	public Context contentView;
 	private static String TAG = "MainActivity";
@@ -51,10 +53,12 @@ public class udpclient {
     	//Toast.makeText(getapp, text, duration)
     	//Toast.makeText(contentView, log	, Toast.LENGTH_LONG).show();
     }
-    
+    int icount =0;
     @SuppressLint("NewApi")
     public void Looper()
     {
+
+    	Log.d(TAG,"loopcount:"+icount++);
         async_cient = new AsyncTask<Void, Void, Void>() 
         {
             @Override
@@ -73,7 +77,7 @@ public class udpclient {
             	{
             		sendMsg();
 
-            		receMsg();
+            		//receMsg();
             		if(recvingMsg.startsWith("receive"))
             		{
             			setStopLoop(1,"");
@@ -84,7 +88,8 @@ public class udpclient {
 //                 			setStopLoop(2,"");
 //                 		}
             		try {
-						Thread.sleep(1000);
+						Thread.sleep(2000);
+						Log.d(TAG,"sleep2000 counter:"+icount);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -151,7 +156,9 @@ public class udpclient {
             }
         };
 
-        if (Build.VERSION.SDK_INT >= 11) async_cient.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        else async_cient.execute();
+        if (Build.VERSION.SDK_INT >= 11) 
+        	async_cient.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        else 
+        	async_cient.execute();
     }
 }

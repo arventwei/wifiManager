@@ -1,16 +1,9 @@
 package com.txmcu.wifimanagerdemo;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.List;
 
 import android.app.Activity;
 import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,12 +15,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.txmcu.WifiManager.Global;
 import com.txmcu.WifiManager.WifiHotManager;
 import com.txmcu.WifiManager.WifiHotManager.OpretionsType;
 import com.txmcu.WifiManager.WifiHotManager.WifiBroadCastOperations;
+import com.txmcu.xiaoxin.Udpclient;
 
 public class MainActivity extends Activity 
 implements OnClickListener,WifiBroadCastOperations{
@@ -45,7 +38,7 @@ implements OnClickListener,WifiBroadCastOperations{
 	EditText authmodeText;
 	EditText encryp_typeText;
 	EditText channelText;
-
+	//Udpclient client;
 	TextView apInfoTextView;
 
 	private WifiHotAdapter adapter;
@@ -79,6 +72,8 @@ implements OnClickListener,WifiBroadCastOperations{
 		
 		//client = new udpclient();
 		WifiInfo wi =wifiHotM.getConnectWifiInfo();
+		
+
 		
 		ssidText.setText(wi.getSSID());
 		List<String> authInfo = wifiHotM.getAuthMode(wi.getSSID());
@@ -139,9 +134,9 @@ implements OnClickListener,WifiBroadCastOperations{
 			//wifiHotM.connectToHotpot("xiaoxin_AP",  "xiaoxinap");
 			//wifiHotM.scanWifiHot();
 			//configXiaoxin();
-			
-			udpclient client = new udpclient();
+			Udpclient client = new Udpclient();
 			client.contentView = this;
+	
 			client.setSendWifiInfo(ssidText.getText().toString(),
 					pwdText.getText().toString(), 
 					authmodeText.getText().toString(),
@@ -186,38 +181,39 @@ implements OnClickListener,WifiBroadCastOperations{
 	@Override
 	public void disPlayWifiScanResult(List<ScanResult> wifiList) {
 
-		Log.i(TAG, "into 扫描结果回调函数");
+		//Log.i(TAG, "into 扫描结果回调函数");
 		this.wifiList = wifiList;
 		wifiHotM.unRegisterWifiScanBroadCast();
 		refreshWifiList(wifiList);
-		Log.i(TAG, "out 热点扫描结果 ： = " + wifiList);
+		Log.i(TAG, " 热点扫描结果 ： = " + wifiList);
 
 	}
-
+	
 	// wifi 连接回调
 	@Override
 	public boolean disPlayWifiConResult(boolean result, WifiInfo wifiInfo) {
 
-		Log.i(TAG, "into 热点连接回调函数");
-		String ip = "";
+		Log.i(TAG, "热点连接回调函数"+String.valueOf(result)+wifiInfo!=null?wifiInfo.toString():"null");
+		//String ip = "";
 		wifiHotM.setConnectStatu(false);
 		wifiHotM.unRegisterWifiStateBroadCast();
 		wifiHotM.unRegisterWifiConnectBroadCast();
 		//initClient(ip);
-		Log.i(TAG, "out 热点链接回调函数");
+		//Toast.makeText(this, String.valueOf(result), Toast.LENGTH_LONG).show();
+		//Log.i(TAG, "out 热点链接回调函数");
 		return false;
 	}
 
 	// wifi 热点连接、扫描在Wifi关闭的情况下，回调
 	@Override
 	public void operationByType(OpretionsType type, String SSID,String pwd) {
-		Log.i(TAG, "into operationByType！type = " + type);
+		Log.i(TAG, "operationByType！type = " + type);
 		if (type == OpretionsType.CONNECT) {
 			wifiHotM.connectToHotpot(SSID,  pwd);
 		} else if (type == OpretionsType.SCAN) {
 			wifiHotM.scanWifiHot();
 		}
-		Log.i(TAG, "out operationByType！");
+		//Log.i(TAG, "out operationByType！");
 
 	}
 }
