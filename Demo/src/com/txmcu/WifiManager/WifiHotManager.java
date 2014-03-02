@@ -1,11 +1,13 @@
 package com.txmcu.WifiManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiConfiguration.KeyMgmt;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
@@ -43,20 +45,20 @@ public class WifiHotManager {
 	public static interface WifiBroadCastOperations {
 
 		/**
-		 * @param wifiList 热掉扫描结果
+		 * @param wifiList 鐑帀鎵弿缁撴灉
 		 */
 		public void disPlayWifiScanResult(List<ScanResult> wifiList);
 
 		/**
-		 * @param result wifi 连接结果
-		 * @param wifiInfo wifi连接信息
-		 * @return wifi连接结果
+		 * @param result wifi 杩炴帴缁撴灉
+		 * @param wifiInfo wifi杩炴帴淇℃伅
+		 * @return wifi杩炴帴缁撴灉
 		 */
 		public boolean disPlayWifiConResult(boolean result, WifiInfo wifiInfo);
 
 		/**
 		 * @param type conntect wifi or scan wifi
-		 * @param SSID wifi 连接时指定的SSID
+		 * @param SSID wifi 杩炴帴鏃舵寚瀹氱殑SSID
 		 */
 		public void operationByType(OpretionsType type, String SSID,String pWd);
 
@@ -77,8 +79,63 @@ public class WifiHotManager {
 		wifiApadmin = WifiHotAdmin.newInstance(context);
 		mWifimanager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
 	}
-
-	// 检测Wifi是否打开
+	public List<String> getAuthMode(String SSID)
+	{
+		SSID="\""+SSID+"\"";
+		List<String> ret = new ArrayList<String>();
+		ret.add("OPEN");
+		ret.add("None");
+		if (mWifimanager == null) {
+			mWifimanager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+		}
+		List<WifiConfiguration> existingConfigs = mWifimanager.getConfiguredNetworks();
+		if (existingConfigs == null) {
+			return ret;
+		}
+		for (WifiConfiguration existingConfig : existingConfigs) {
+			if (existingConfig.SSID.equalsIgnoreCase(SSID)) {
+				
+				//capabilities
+				//existingConfig.
+			//	existingConfig.allowedAuthAlgorithms.get(index)
+				if (existingConfig.allowedAuthAlgorithms.get(WifiConfiguration.AuthAlgorithm.OPEN)
+					&&existingConfig.allowedProtocols.get(WifiConfiguration.Protocol.RSN)) {
+					ret.set(0, "WPA2PSK");
+				}
+				else if (existingConfig.allowedAuthAlgorithms.get(WifiConfiguration.AuthAlgorithm.OPEN)
+						&&existingConfig.allowedProtocols.get(WifiConfiguration.Protocol.WPA)) {
+						ret.set(0, "WPAPSK");
+					}
+				else if (existingConfig.allowedAuthAlgorithms.get(WifiConfiguration.AuthAlgorithm.SHARED)
+					) {
+						ret.set(0, "WEP");
+					}
+				if (existingConfig.allowedPairwiseCiphers.get(WifiConfiguration.PairwiseCipher.CCMP)
+						) {
+					ret.set(1, "AES");
+				}
+				else if (existingConfig.allowedPairwiseCiphers.get(WifiConfiguration.PairwiseCipher.TKIP)
+						) {
+					ret.set(1, "TKIP");
+				}
+				else if (existingConfig.allowedGroupCiphers.get(WifiConfiguration.GroupCipher.WEP104)
+						||existingConfig.allowedGroupCiphers.get(WifiConfiguration.GroupCipher.WEP40)) {
+							ret.set(1, "WEP");
+						}
+		
+			}
+		}
+		return ret;
+	}
+	public WifiInfo getConnectWifiInfo()
+	{
+		if (mWifimanager == null) {
+			mWifimanager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+		}
+		WifiInfo wifiInfo = mWifimanager.getConnectionInfo();
+		return wifiInfo;
+	}
+	// 妫�祴Wifi鏄惁鎵撳紑
 	public boolean wifiIsOpen() {
 		if (mWifimanager == null) {
 			mWifimanager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -86,7 +143,7 @@ public class WifiHotManager {
 		return mWifimanager.isWifiEnabled();
 	}
 
-	// 扫描Wifi热点
+	// 鎵弿Wifi鐑偣
 	public void scanWifiHot() {
 		Log.i(TAG, "into wifiHotScan()");
 		if (!wifiIsOpen()) {
@@ -101,7 +158,7 @@ public class WifiHotManager {
 		Log.i(TAG, "out wifiHotScan()");
 	}
 
-	// 连接热点
+	// 杩炴帴鐑偣
 	public void connectToHotpot(final String SSID, final String password) {
 		if (SSID == null || SSID.equals("")) {
 			Log.d(TAG, "WIFI ssid is null or ");
@@ -130,7 +187,7 @@ public class WifiHotManager {
 		this.isConnecting = connecting;
 	}
 
-	// 检查连接SSID是否在搜索到的wifi列表中
+	// 妫�煡杩炴帴SSID鏄惁鍦ㄦ悳绱㈠埌鐨剋ifi鍒楄〃涓�
 	public boolean checkConnectHotIsEnable(String wifiName, List<ScanResult> wifiList) {
 
 		for (ScanResult result : wifiList) {
@@ -141,7 +198,7 @@ public class WifiHotManager {
 		return false;
 	}
 
-	// 连接热点
+	// 杩炴帴鐑偣
 	public void enableNetwork(final String SSID, final String password) {
 		deleteMoreCon(SSID);
 		Log.i(TAG, "into enableNetwork(WifiConfiguration wifiConfig)");
@@ -164,7 +221,7 @@ public class WifiHotManager {
 		Log.i(TAG, "out enableNetwork(WifiConfiguration wifiConfig)");
 	}
 
-	/* 连接热点 */
+	/* 杩炴帴鐑偣 */
 	private boolean connectHotSpot(WifiConfiguration wifiConfig) {
 		Log.i(TAG, "into enableNetwork(WifiConfiguration wifiConfig)");
 		int wcgID = mWifimanager.addNetwork(wifiConfig);
@@ -179,7 +236,7 @@ public class WifiHotManager {
 		return flag;
 	}
 
-	// 启动wifi一个Wifi热点
+	// 鍚姩wifi涓�釜Wifi鐑偣
 	public void startAWifiHot(String wifiName,String password) {
 		Log.i(TAG, "into startAWifiHot(String wifiName) wifiName =" + wifiName);
 		if (mWifimanager.isWifiEnabled()) {
@@ -191,7 +248,7 @@ public class WifiHotManager {
 		Log.i(TAG, "out startAWifiHot(String wifiName)");
 	}
 
-	// 关闭Wifi热点
+	// 鍏抽棴Wifi鐑偣
 	public void closeAWifiHot() {
 		Log.i(TAG, "into closeAWifiHot()");
 		if (wifiApadmin != null) {
@@ -200,7 +257,7 @@ public class WifiHotManager {
 		Log.i(TAG, "out closeAWifiHot()");
 	}
 
-	// 搜索附近Wifi热点
+	// 鎼滅储闄勮繎Wifi鐑偣
 	private void scanNearWifiHots() {
 		Log.i(TAG, "into scanNearWifiHots()");
 		registerWifiScanBroadCast();
@@ -219,7 +276,7 @@ public class WifiHotManager {
 		Log.i(TAG, "out OpenWifi()");
 	}
 
-	// 注册wifi 状态监听广播
+	// 娉ㄥ唽wifi 鐘舵�鐩戝惉骞挎挱
 	private void registerWifiStateBroadcast(String SSID,String pwdString) {
 		IntentFilter filter = new IntentFilter();
 		if (wifiStateReceiver == null) {
@@ -229,7 +286,7 @@ public class WifiHotManager {
 		context.registerReceiver(wifiStateReceiver, filter);
 	}
 
-	// 注册wifi 扫描结果监听广播
+	// 娉ㄥ唽wifi 鎵弿缁撴灉鐩戝惉骞挎挱
 	private void registerWifiScanBroadCast() {
 		IntentFilter filter = new IntentFilter();
 		if (wifiScanReceiver == null) {
@@ -240,7 +297,7 @@ public class WifiHotManager {
 		context.registerReceiver(wifiScanReceiver, filter);
 	}
 
-	// 注册wifi热点连接广播
+	// 娉ㄥ唽wifi鐑偣杩炴帴骞挎挱
 	private void registerWifiConnectBroadCast() {
 		if (wifiConnectReceiver == null) {
 			wifiConnectReceiver = new WifiConnectBroadCast(operations);
@@ -250,7 +307,7 @@ public class WifiHotManager {
 		context.registerReceiver(wifiConnectReceiver, filter);
 	}
 
-	// 去掉wifi状态广播监听
+	// 鍘绘帀wifi鐘舵�骞挎挱鐩戝惉
 	public void unRegisterWifiStateBroadCast() {
 		if (wifiStateReceiver != null) {
 			context.unregisterReceiver(wifiStateReceiver);
@@ -258,7 +315,7 @@ public class WifiHotManager {
 		}
 	}
 
-	// 去掉wifi扫描结果监听
+	// 鍘绘帀wifi鎵弿缁撴灉鐩戝惉
 	public void unRegisterWifiScanBroadCast() {
 		if (wifiScanReceiver != null) {
 			context.unregisterReceiver(wifiScanReceiver);
@@ -266,7 +323,7 @@ public class WifiHotManager {
 		}
 	}
 
-	// 去掉wifi连接广播监听
+	// 鍘绘帀wifi杩炴帴骞挎挱鐩戝惉
 	public void unRegisterWifiConnectBroadCast() {
 		if (wifiConnectReceiver != null) {
 			context.unregisterReceiver(wifiConnectReceiver);
@@ -274,7 +331,7 @@ public class WifiHotManager {
 		}
 	}
 
-	// 关闭重复的热点，避免连接不上
+	// 鍏抽棴閲嶅鐨勭儹鐐癸紝閬垮厤杩炴帴涓嶄笂
 	public void deleteMoreCon(String SSID) {
 		Log.i(TAG, "into deleteMoreCon(String SSID) SSID= " + SSID);
 		String destStr = "\"" + SSID + "\"";
@@ -296,7 +353,7 @@ public class WifiHotManager {
 
 	}
 
-	// 关闭热点
+	// 鍏抽棴鐑偣
 	public void disableWifiHot() {
 		wifiApadmin.closeWifiAp();
 	}

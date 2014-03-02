@@ -30,18 +30,73 @@ public class Global {
 
 	public static String CONNECT_FAIL = "connect_fail";
 
-	// 数据传输命令
-	public static final int IPMSG_SNEDCLIENTDATA = 0x00000050; // 发送单个client信息（socket连接成功后执行）
+	// 鏁版嵁浼犺緭鍛戒护
+	public static final int IPMSG_SNEDCLIENTDATA = 0x00000050; // 鍙戦�鍗曚釜client淇℃伅锛坰ocket杩炴帴鎴愬姛鍚庢墽琛岋級
 
-	public static final int IPMSG_SENDALLCLIENTS = 0x00000051; // 发送全部客户端信息（Server
-																// 接收一个client连接后发送当前所有客户端信息）
+	public static final int IPMSG_SENDALLCLIENTS = 0x00000051; // 鍙戦�鍏ㄩ儴瀹㈡埛绔俊鎭紙Server
+																// 鎺ユ敹涓�釜client杩炴帴鍚庡彂閫佸綋鍓嶆墍鏈夊鎴风淇℃伅锛�
 
-	public static final int IPMSG_SENDROTARYDATA = 0x00000060; // 发送旋转角度信息
+	public static final int IPMSG_SENDROTARYDATA = 0x00000060; // 鍙戦�鏃嬭浆瑙掑害淇℃伅
 
-	public static final int IPMSG_SENDROTARYRESULT = 0x00000061; // 发送旋转的结果
+	public static final int IPMSG_SENDROTARYRESULT = 0x00000061; // 鍙戦�鏃嬭浆鐨勭粨鏋�
 
-	public static final int IPMSG_SENDCHANGECONTROLLER = 0x00000062; // 发送修改控制权
+	public static final int IPMSG_SENDCHANGECONTROLLER = 0x00000062; // 鍙戦�淇敼鎺у埗鏉�
 
-	public static final int IPMSG_REQUESTCHANGECONTROLLER = 0x00000062; // 请求修改控制权
+	public static final int IPMSG_REQUESTCHANGECONTROLLER = 0x00000062; // 璇锋眰淇敼鎺у埗鏉�
+	
+	/**
+     * 根据频率获得信道
+     * @param frequency
+     * @return
+     */
+    public static int getChannel(int frequency)
+    {
+            int channel = 0;
+            switch(frequency){
+            case 2412:
+                    channel = 1;
+                    break;
+            case 2417:
+                    channel = 2;
+                    break;
+            case 2422:
+                    channel = 3;
+                    break;
+            case 2427:
+                    channel = 4;
+                    break;
+            case 2432:
+                    channel = 5;
+                    break;
+            case 2437:
+                    channel = 6;
+                    break;
+            case 2442:
+                    channel = 7;
+                    break;
+            case 2447:
+                    channel = 8;
+                    break;
+            case 2452:
+                    channel = 9;
+                    break;
+            case 2457:
+                    channel = 10;
+                    break;
+            case 2462:
+                    channel = 11;
+                    break;
+            case 2467:
+                    channel = 12;
+                    break;
+            case 2472:
+                    channel = 13;
+                    break;
+            case 2484:
+                    channel = 14;
+                    break;
+            }
+            return channel;
+    }
 
 }

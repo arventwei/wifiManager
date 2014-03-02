@@ -7,13 +7,13 @@ public class WifiHotConfigAdmin {
 
 	private static String TAG = "WifiConfigurationAdmin";
 
-	// 没有密码的情况
+	// 娌℃湁瀵嗙爜鐨勬儏鍐�
 	public static WifiConfiguration createWifiNoPassInfo(String SSID, String password) {
 
 		Log.v(TAG, "into nopass  SSID = " + SSID + "  Password = " + password + " Type = ");
 		WifiConfiguration config = new WifiConfiguration();
 		config = createWifiInfo(config, SSID, password);
-		// 千万别忘了转义字符
+		// 鍗冧竾鍒繕浜嗚浆涔夊瓧绗�
 		config.wepKeys[0] = "\"" + "" + "\"";
 		config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 		config.wepTxKeyIndex = 0;
@@ -55,6 +55,7 @@ public class WifiHotConfigAdmin {
 		config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
 		config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
 		// config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+		//WifiConfiguration.Protocol.WPA;
 		config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
 		config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
 		config.status = WifiConfiguration.Status.ENABLED;
@@ -66,7 +67,7 @@ public class WifiHotConfigAdmin {
 	private static WifiConfiguration createWifiInfo(WifiConfiguration config, String SSID,
 			String password) {
 
-		Log.v(TAG, "into wifi热点连接配置   SSID = " + SSID + "  Password = " + password);
+		Log.v(TAG, "into wifi鐑偣杩炴帴閰嶇疆   SSID = " + SSID + "  Password = " + password);
 		config.allowedAuthAlgorithms.clear();
 		config.allowedGroupCiphers.clear();
 		config.allowedKeyManagement.clear();
@@ -74,7 +75,7 @@ public class WifiHotConfigAdmin {
 		config.allowedProtocols.clear();
 		config.SSID =  SSID;
 		config.priority = 0;
-		Log.v(TAG, "into wifi热点连接配置   config.SSID = " + config.SSID + "  Password = " + password);
+		Log.v(TAG, "into wifi鐑偣杩炴帴閰嶇疆   config.SSID = " + config.SSID + "  Password = " + password);
 		return config;
 	}
 }

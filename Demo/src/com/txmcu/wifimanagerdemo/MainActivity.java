@@ -1,9 +1,16 @@
 package com.txmcu.wifimanagerdemo;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import android.app.Activity;
 import android.net.wifi.ScanResult;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.txmcu.WifiManager.Global;
 import com.txmcu.WifiManager.WifiHotManager;
@@ -34,7 +42,10 @@ implements OnClickListener,WifiBroadCastOperations{
 	
 	EditText ssidText;
 	EditText pwdText;
-	
+	EditText authmodeText;
+	EditText encryp_typeText;
+	EditText channelText;
+
 	TextView apInfoTextView;
 
 	private WifiHotAdapter adapter;
@@ -50,6 +61,11 @@ implements OnClickListener,WifiBroadCastOperations{
 		
 		ssidText = (EditText)findViewById(R.id.wifi_ssid);
 		pwdText = (EditText)findViewById(R.id.wifi_pwd);
+		authmodeText = (EditText)findViewById(R.id.wifi_authmode);
+		encryp_typeText = (EditText)findViewById(R.id.wifi_encryp_type);
+		channelText = (EditText)findViewById(R.id.wifi_channel);
+		
+		
 		apInfoTextView = (TextView)findViewById(R.id.ApInfo);
 		// 热点列表
 		listView = (ListView) findViewById(R.id.wifilist);
@@ -58,6 +74,17 @@ implements OnClickListener,WifiBroadCastOperations{
 		((Button)findViewById(R.id.connect)).setOnClickListener(this);
 		((Button)findViewById(R.id.disconnect)).setOnClickListener(this);
 		((Button)findViewById(R.id.scan)).setOnClickListener(this);
+		((Button)findViewById(R.id.xiaoxin)).setOnClickListener(this);
+		((Button)findViewById(R.id.config)).setOnClickListener(this);
+		
+		//client = new udpclient();
+		WifiInfo wi =wifiHotM.getConnectWifiInfo();
+		
+		ssidText.setText(wi.getSSID());
+		List<String> authInfo = wifiHotM.getAuthMode(wi.getSSID());
+		authmodeText.setText(authInfo.get(0));
+		encryp_typeText.setText(authInfo.get(1));
+		//authmodeText.setText(wi.getSupplicantState().)
 		
 		listView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -82,7 +109,8 @@ implements OnClickListener,WifiBroadCastOperations{
 		//wifiHotM.scanWifiHot();
 		super.onResume();
 	}
-		
+	
+	
 	@Override
 	public void onClick(View v) {
 		if (v.getId()==R.id.createAp) {
@@ -103,10 +131,46 @@ implements OnClickListener,WifiBroadCastOperations{
 		else if (v.getId()==R.id.scan) {
 			wifiHotM.scanWifiHot();
 		}
+		else if (v.getId()==R.id.xiaoxin) {
+			wifiHotM.connectToHotpot("xiaoxin_AP",  "xiaoxinap");
+			//wifiHotM.scanWifiHot();
+		}	
+		else if (v.getId()==R.id.config) {
+			//wifiHotM.connectToHotpot("xiaoxin_AP",  "xiaoxinap");
+			//wifiHotM.scanWifiHot();
+			//configXiaoxin();
+			
+			udpclient client = new udpclient();
+			client.contentView = this;
+			client.setSendWifiInfo(ssidText.getText().toString(),
+					pwdText.getText().toString(), 
+					authmodeText.getText().toString(),
+					encryp_typeText.getText().toString(),
+					channelText.getText().toString());
+			client.Looper();
+			//receiveXiaoXin();
+		}
 	}
+	List<ScanResult> scannlist = null;
 	
+	String getChannelBySSID(String ssid)
+	{
+		
+		for (ScanResult sr : scannlist) {
+			if (sr.SSID.equalsIgnoreCase(ssid)) {
+				int  channel =  Global.getChannel(sr.frequency);
+				return String.valueOf(channel);
+			}
+		}
+		return "6";	
+	}
 	private void refreshWifiList(List<ScanResult> results) {
 		Log.i(TAG, "into 刷新wifi热点列表");
+		//ScanResult sr;
+		
+		scannlist = results;
+		
+		channelText.setText(getChannelBySSID(ssidText.getText().toString()));
 		if (null == adapter) {
 			Log.i(TAG, "into 刷新wifi热点列表 adapter is null！");
 			adapter = new WifiHotAdapter(results, this);
