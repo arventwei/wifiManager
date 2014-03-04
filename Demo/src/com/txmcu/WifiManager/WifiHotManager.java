@@ -45,20 +45,20 @@ public class WifiHotManager {
 	public static interface WifiBroadCastOperations {
 
 		/**
-		 * @param wifiList 鐑帀鎵弿缁撴灉
+		 * @param wifiList 热点扫描结果
 		 */
 		public void disPlayWifiScanResult(List<ScanResult> wifiList);
 
 		/**
-		 * @param result wifi 杩炴帴缁撴灉
-		 * @param wifiInfo wifi杩炴帴淇℃伅
-		 * @return wifi杩炴帴缁撴灉
+		 * @param result wifi 连接结果
+		 * @param wifiInfo wifi连接信息
+		 * @return wifi连接结果
 		 */
 		public boolean disPlayWifiConResult(boolean result, WifiInfo wifiInfo);
 
 		/**
 		 * @param type conntect wifi or scan wifi
-		 * @param SSID wifi 杩炴帴鏃舵寚瀹氱殑SSID
+		 * @param SSID wifi 连接时指定的SSID
 		 */
 		public void operationByType(OpretionsType type, String SSID,String pWd);
 
@@ -140,7 +140,7 @@ public class WifiHotManager {
 		WifiInfo wifiInfo = mWifimanager.getConnectionInfo();
 		return wifiInfo;
 	}
-	// 妫�祴Wifi鏄惁鎵撳紑
+	// 检测Wifi是否打开
 	public boolean wifiIsOpen() {
 		if (mWifimanager == null) {
 			mWifimanager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
@@ -148,7 +148,7 @@ public class WifiHotManager {
 		return mWifimanager.isWifiEnabled();
 	}
 
-	// 鎵弿Wifi鐑偣
+	// 扫描Wifi热点
 	public void scanWifiHot() {
 		Log.i(TAG, "into wifiHotScan()");
 		if (!wifiIsOpen()) {
@@ -163,7 +163,7 @@ public class WifiHotManager {
 		Log.i(TAG, "out wifiHotScan()");
 	}
 
-	// 杩炴帴鐑偣
+	// 连接热点
 	public void connectToHotpot(final String SSID, final String password) {
 		if (SSID == null || SSID.equals("")) {
 			Log.d(TAG, "WIFI ssid is null or ");
@@ -192,7 +192,7 @@ public class WifiHotManager {
 		this.isConnecting = connecting;
 	}
 
-	// 妫�煡杩炴帴SSID鏄惁鍦ㄦ悳绱㈠埌鐨剋ifi鍒楄〃涓�
+	// 检查连接SSID是否在搜索到的wifi列表中
 	public boolean checkConnectHotIsEnable(String wifiName, List<ScanResult> wifiList) {
 
 		for (ScanResult result : wifiList) {
@@ -203,7 +203,7 @@ public class WifiHotManager {
 		return false;
 	}
 
-	// 杩炴帴鐑偣
+	// 连接热点
 	public void enableNetwork(final String SSID, final String password) {
 		deleteMoreCon(SSID);
 		Log.i(TAG, "into enableNetwork(WifiConfiguration wifiConfig)");
@@ -226,7 +226,7 @@ public class WifiHotManager {
 		Log.i(TAG, "out enableNetwork(WifiConfiguration wifiConfig)");
 	}
 
-	/* 杩炴帴鐑偣 */
+	/* 连接热点 */
 	private boolean connectHotSpot(WifiConfiguration wifiConfig) {
 		Log.i(TAG, "into enableNetwork(WifiConfiguration wifiConfig)");
 		int wcgID = mWifimanager.addNetwork(wifiConfig);
@@ -241,7 +241,7 @@ public class WifiHotManager {
 		return flag;
 	}
 
-	// 鍚姩wifi涓�釜Wifi鐑偣
+	// 启动wifi一个Wifi热点
 	public void startAWifiHot(String wifiName,String password) {
 		Log.i(TAG, "into startAWifiHot(String wifiName) wifiName =" + wifiName);
 		if (mWifimanager.isWifiEnabled()) {
@@ -262,7 +262,7 @@ public class WifiHotManager {
 		Log.i(TAG, "out closeAWifiHot()");
 	}
 
-	// 鎼滅储闄勮繎Wifi鐑偣
+	// 搜索附近Wifi热点
 	private void scanNearWifiHots() {
 		Log.i(TAG, "into scanNearWifiHots()");
 		registerWifiScanBroadCast();
@@ -302,7 +302,7 @@ public class WifiHotManager {
 		context.registerReceiver(wifiScanReceiver, filter);
 	}
 
-	// 娉ㄥ唽wifi鐑偣杩炴帴骞挎挱
+	// 注册wifi热点连接广播
 	private void registerWifiConnectBroadCast(String SSID) {
 		if (wifiConnectReceiver == null) {
 			wifiConnectReceiver = new WifiConnectBroadCast(operations,SSID);
@@ -313,7 +313,7 @@ public class WifiHotManager {
 		context.registerReceiver(wifiConnectReceiver, filter);
 	}
 
-	// 鍘绘帀wifi鐘舵�骞挎挱鐩戝惉
+	// 去掉wifi状态广播监听
 	public void unRegisterWifiStateBroadCast() {
 		if (wifiStateReceiver != null) {
 			context.unregisterReceiver(wifiStateReceiver);
@@ -321,7 +321,7 @@ public class WifiHotManager {
 		}
 	}
 
-	// 鍘绘帀wifi鎵弿缁撴灉鐩戝惉
+	// 去掉wifi扫描结果监听
 	public void unRegisterWifiScanBroadCast() {
 		if (wifiScanReceiver != null) {
 			context.unregisterReceiver(wifiScanReceiver);
@@ -329,7 +329,7 @@ public class WifiHotManager {
 		}
 	}
 
-	// 鍘绘帀wifi杩炴帴骞挎挱鐩戝惉
+	// 去掉wifi连接广播监听
 	public void unRegisterWifiConnectBroadCast() {
 		if (wifiConnectReceiver != null) {
 			context.unregisterReceiver(wifiConnectReceiver);
@@ -337,7 +337,7 @@ public class WifiHotManager {
 		}
 	}
 
-	// 鍏抽棴閲嶅鐨勭儹鐐癸紝閬垮厤杩炴帴涓嶄笂
+	// 关闭重复的热点，避免连接不上
 	public void deleteMoreCon(String SSID) {
 		Log.i(TAG, "into deleteMoreCon(String SSID) SSID= " + SSID);
 		String destStr = "\"" + SSID + "\"";

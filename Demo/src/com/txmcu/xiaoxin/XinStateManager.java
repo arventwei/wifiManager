@@ -2,6 +2,7 @@ package com.txmcu.xiaoxin;
 
 import java.util.List;
 
+import android.R.integer;
 import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
@@ -19,28 +20,58 @@ public class XinStateManager
 implements WifiBroadCastOperations{
 	
 	private Context context;
+	private XinOperations operations;
 	private WifiHotManager wifiHotM;
 	private static XinStateManager instance = null;
 	
 	static String TAG = "XinStateManager";
 	
+	public enum ConfigType {
+		Succeed,
+		Failed_Connect_XiaoXin,
+		Failed_TimeOut,
+		Failed_XiaoXinConfig
+	}
+	public static int TimeOutSecond = 120;
 	
-	public static XinStateManager getInstance(Context context) {
+	public static interface XinOperations {
+
+		/**
+		 * @param init callback ,then invoke config
+		 */
+		public void initResult(boolean result);
+
+		/**
+		 * @param invoke callback
+		 */
+		public void configResult(ConfigType type );
+	}
+	
+	public static XinStateManager getInstance(Context context,XinOperations operations) {
 
 		if (instance == null) {
-			instance = new XinStateManager(context);
+			instance = new XinStateManager(context,operations);
 
 		}
 		return instance;
 	}
 
-	private XinStateManager(Context context) {
+	private XinStateManager(Context context,XinOperations operations) {
 		this.context = context;
+		this.operations = operations;
 		wifiHotM = WifiHotManager.getInstance(this.context, XinStateManager.this);
 
 		wifiHotM.scanWifiHot();
 	}
 	
+	public void Init()
+	{
+		
+	}
+	public void Config(String SSID,String Pwd)
+	{
+		
+	}
 	// wifi 热点扫描回调
 	@Override
 	public void disPlayWifiScanResult(List<ScanResult> wifiList) {
