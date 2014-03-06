@@ -3,6 +3,7 @@ package com.txmcu.WifiManager;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.R.integer;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
@@ -63,7 +64,10 @@ public class WifiHotManager {
 		public void operationByType(OpretionsType type, String SSID,String pWd);
 
 	}
-
+	public static void destroy() {
+		
+		instance = null;
+	}
 	public static WifiHotManager getInstance(Context context, WifiBroadCastOperations operations) {
 
 		if (instance == null) {
@@ -225,7 +229,9 @@ public class WifiHotManager {
 		}).start();
 		Log.i(TAG, "out enableNetwork(WifiConfiguration wifiConfig)");
 	}
-
+	public void enableNetWorkById(int netId) {
+		mWifimanager.enableNetwork(netId, true);
+	}
 	/* 连接热点 */
 	private boolean connectHotSpot(WifiConfiguration wifiConfig) {
 		Log.i(TAG, "into enableNetwork(WifiConfiguration wifiConfig)");

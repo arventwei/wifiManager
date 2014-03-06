@@ -10,6 +10,7 @@ import android.net.wifi.WifiManager;
 import android.util.Log;
 import android.view.View.OnClickListener;
 
+import com.txmcu.WifiManager.Global;
 import com.txmcu.WifiManager.WifiHotAdmin;
 import com.txmcu.WifiManager.WifiHotManager;
 import com.txmcu.WifiManager.WifiHotManager.OpretionsType;
@@ -37,7 +38,7 @@ implements WifiBroadCastOperations{
 	public static interface XinOperations {
 
 		/**
-		 * @param init callback ,then invoke config
+		 * @param init callback ,close wait dialog
 		 */
 		public void initResult(boolean result);
 
@@ -46,7 +47,9 @@ implements WifiBroadCastOperations{
 		 */
 		public void configResult(ConfigType type );
 	}
-	
+	public static void destroy() {
+		instance = null;
+	}
 	public static XinStateManager getInstance(Context context,XinOperations operations) {
 
 		if (instance == null) {
@@ -66,18 +69,67 @@ implements WifiBroadCastOperations{
 	
 	public void Init()
 	{
-		
+		wifiHotM.scanWifiHot();
+		//backupCurrentWifiState();
 	}
 	public void Config(String SSID,String Pwd)
 	{
+		wifiHotM.connectToHotpot(SSID, Pwd);
+	}
+	public void Destroy()
+	{
+		restoreCurrentWifiState();
+		wifiHotM.unRegisterWifiConnectBroadCast();
+		wifiHotM.unRegisterWifiScanBroadCast();
+		wifiHotM.unRegisterWifiStateBroadCast();
+		WifiHotManager.destroy();
+		XinStateManager.destroy();
 		
+	}
+	int wifibackupNetId;
+	String wifibackupSSID;
+	String wifibackupChannel;
+	private void backupCurrentWifiState(WifiInfo info,List<ScanResult> scannlist ) {
+		wifibackupNetId=0;
+		wifibackupSSID="";
+		if (info!=null) {
+			wifibackupNetId = info.getNetworkId();
+			wifibackupSSID = info.getSSID();
+			
+			
+			wifibackupChannel = "6";
+			for (ScanResult sr : scannlist) 
+			{
+				if (sr.SSID.equalsIgnoreCase(wifibackupSSID))
+				{
+					int  channel =  Global.getChannel(sr.frequency);
+					wifibackupChannel= String.valueOf(channel);
+					break;
+				}
+			}
+			
+		}
+	}
+	private void restoreCurrentWifiState() {
+		wifiHotM.enableNetWorkById(wifibackupNetId);
 	}
 	// wifi 热点扫描回调
 	@Override
 	public void disPlayWifiScanResult(List<ScanResult> wifiList) {
 
+		wifiHotM.unRegisterWifiScanBroadCast();
 		Log.i(TAG, " 热点扫描结果 ： = " + wifiList);
-
+		backupCurrentWifiState(wifiHotM.getConnectWifiInfo(),wifiList);
+		if (wifibackupSSID.length()==0) {
+			operations.initResult(false);
+		}
+		else {
+			operations.initResult(true);
+		}
+		
+		
+		
+		//wifiHotM.enableNetwork(SSID, password)
 	}
 	
 	// wifi 连接回调
