@@ -18,20 +18,22 @@ import com.txmcu.WifiManager.WifiHotManager.WifiBroadCastOperations;
 import com.txmcu.wifimanagerdemo.MainActivity;
 
 public class XinStateManager 
-implements WifiBroadCastOperations{
+implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
 	
 	private Context context;
 	private XinOperations operations;
 	private WifiHotManager wifiHotM;
 	private static XinStateManager instance = null;
+	private Udpclient udpclient = null;
 	
 	static String TAG = "XinStateManager";
 	
 	public enum ConfigType {
 		Succeed,
-		Failed_Connect_XiaoXin,
-		Failed_TimeOut,
-		Failed_XiaoXinConfig
+		Failed,
+		//Failed_Connect_XiaoXin,
+	//	Failed_TimeOut,
+		//Failed_XiaoXinConfig
 	}
 	public static int TimeOutSecond = 120;
 	
@@ -40,7 +42,7 @@ implements WifiBroadCastOperations{
 		/**
 		 * @param init callback ,close wait dialog
 		 */
-		public void initResult(boolean result);
+		public void initResult(boolean result,String SSID);
 
 		/**
 		 * @param invoke callback
@@ -70,10 +72,12 @@ implements WifiBroadCastOperations{
 	public void Init()
 	{
 		wifiHotM.scanWifiHot();
+		udpclient = new Udpclient();
 		//backupCurrentWifiState();
 	}
 	public void Config(String SSID,String Pwd)
 	{
+		wifibackupPwd = Pwd;
 		wifiHotM.connectToHotpot(SSID, Pwd);
 	}
 	public void Destroy()
@@ -89,6 +93,9 @@ implements WifiBroadCastOperations{
 	int wifibackupNetId;
 	String wifibackupSSID;
 	String wifibackupChannel;
+	String wifibackupPwd;
+	String wifibackupAuthMode;
+	String wifibackupEncrypType;
 	private void backupCurrentWifiState(WifiInfo info,List<ScanResult> scannlist ) {
 		wifibackupNetId=0;
 		wifibackupSSID="";
@@ -108,6 +115,10 @@ implements WifiBroadCastOperations{
 				}
 			}
 			
+			List<String> authInfo = wifiHotM.getAuthMode(wifibackupSSID);
+			wifibackupAuthMode=authInfo.get(0);
+			wifibackupEncrypType=authInfo.get(1);
+			
 		}
 	}
 	private void restoreCurrentWifiState() {
@@ -121,10 +132,10 @@ implements WifiBroadCastOperations{
 		Log.i(TAG, " 热点扫描结果 ： = " + wifiList);
 		backupCurrentWifiState(wifiHotM.getConnectWifiInfo(),wifiList);
 		if (wifibackupSSID.length()==0) {
-			operations.initResult(false);
+			operations.initResult(false,"");
 		}
 		else {
-			operations.initResult(true);
+			operations.initResult(true,wifibackupSSID);
 		}
 		
 		
@@ -136,8 +147,12 @@ implements WifiBroadCastOperations{
 	@Override
 	public boolean disPlayWifiConResult(boolean result, WifiInfo wifiInfo) {
 
-		Log.i(TAG, "热点连接回调函数"+String.valueOf(result)+wifiInfo!=null?wifiInfo.toString():"null");
-
+		Log.i(TAG, "热点连接回调函数");
+		
+		udpclient.setSendWifiInfo(wifibackupSSID, wifibackupPwd,
+				wifibackupAuthMode, wifibackupEncrypType, wifibackupChannel);
+		
+		udpclient.Looper();
 		return false;
 	}
 
@@ -146,6 +161,22 @@ implements WifiBroadCastOperations{
 	public void operationByType(OpretionsType type, String SSID,String pwd) {
 		Log.i(TAG, "operationByType！type = " + type);
 
-
+		if (type == OpretionsType.SCAN) {
+			wifiHotM.scanWifiHot();
+		}
+		else {
+			wifiHotM.connectToHotpot(SSID, pwd);
+		}
+	}
+	@Override
+	public void setState(boolean result, String exception) {
+		// TODO Auto-generated method stub
+		if (result && exception.startsWith("Ok")) {
+			operations.configResult(ConfigType.Succeed);
+		}
+		else {
+			operations.configResult(ConfigType.Failed);
+		}
+		
 	}
 }

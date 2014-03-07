@@ -137,7 +137,7 @@ implements OnClickListener,WifiBroadCastOperations{
 			//wifiHotM.scanWifiHot();
 			//configXiaoxin();
 			Udpclient client = new Udpclient();
-			client.contentView = this;
+			//client.contentView = this;
 	
 			client.setSendWifiInfo(ssidText.getText().toString(),
 					pwdText.getText().toString(), 

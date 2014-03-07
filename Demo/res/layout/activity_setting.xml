@@ -32,7 +32,7 @@
                     android:text="SSID" />
 
                 <EditText
-                    android:id="@+id/EditText01"
+                    android:id="@+id/editSSID"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -50,7 +50,7 @@
                     android:text="PASSWORD" />
 
                 <EditText
-                    android:id="@+id/editText1"
+                    android:id="@+id/editPwd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

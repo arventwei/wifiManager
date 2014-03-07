@@ -1,9 +1,14 @@
 package com.txmcu.xiaoxin;
 
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
+import com.txmcu.xiaoxin.XinStateManager.ConfigType;
 
 import android.R.integer;
 import android.annotation.SuppressLint;
@@ -16,8 +21,20 @@ import android.widget.Toast;
 
 public class Udpclient {
 	
-	public Context contentView;
-	private static String TAG = "MainActivity";
+	public static interface UdpclientOperations {
+
+		/**
+		 * @param init callback ,close wait dialog
+		 */
+		public void setState(boolean result,String exception);
+
+		
+	}
+	
+	
+	UdpclientOperations operations;
+	//public Context contentView;
+	private static String TAG = "Udpclient";
 	public byte[] send_msg = new byte[100];
 	 private AsyncTask<Void, Void, Void> async_cient;
     
@@ -50,6 +67,14 @@ public class Udpclient {
     	stateCode = errorcode;
     	String log = "errorcode:"+errorcode+":"+recvingMsg+":"+excpetion;
     	Log.d(TAG,log);
+    	if (stateCode == 2) {
+    		operations.setState(true,excpetion);
+		}
+    	else if (stateCode<0) {
+			operations.setState(false,excpetion);
+		} {
+			
+		}
     	//Toast.makeText(getapp, text, duration)
     	//Toast.makeText(contentView, log	, Toast.LENGTH_LONG).show();
     }
@@ -57,6 +82,8 @@ public class Udpclient {
     @SuppressLint("NewApi")
     public void Looper()
     {
+    	if(async_cient!=null)
+    		async_cient.cancel(false);
 
     	Log.d(TAG,"loopcount:"+icount++);
         async_cient = new AsyncTask<Void, Void, Void>() 
@@ -69,10 +96,13 @@ public class Udpclient {
                 	receiverAddress = InetAddress.getByName("192.168.3.1");
                     ds = new DatagramSocket();
 	            }
-            	catch (Exception e) 
+            	catch (SocketException e) 
                 {
             		setStopLoop(-1,e.toString());
-                }
+                } catch (UnknownHostException e) {
+					// TODO Auto-generated catch block
+                	setStopLoop(-1,e.toString());
+				}
             	while(stateCode==0)
             	{
             		sendMsg();
@@ -82,18 +112,15 @@ public class Udpclient {
             		{
             			setStopLoop(1,"");
             		}
-//            		if(recvingMsg.startsWith("Ok")
-//                 		   ||recvingMsg.startsWith("Fail"))
-//                 		{
-//                 			setStopLoop(2,"");
-//                 		}
+
             		try {
 						Thread.sleep(2000);
 						Log.d(TAG,"sleep2000 counter:"+icount);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						setStopLoop(-2,e.toString());
+						return null;
+						//setStopLoop(-2,e.toString());
 					}
             	}
             	while(stateCode==1)
@@ -102,14 +129,15 @@ public class Udpclient {
             		if(recvingMsg.startsWith("Ok")
             		   ||recvingMsg.startsWith("Fail"))
             		{
-            			setStopLoop(2,"");
+            			setStopLoop(2,recvingMsg);
             		}
             		try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-						setStopLoop(-5,e.toString());
+						return null;
+						//setStopLoop(-5,e.toString());
 					}
             	}
             	
@@ -124,14 +152,17 @@ public class Udpclient {
 	            	 ds.receive(receivePacket);
 	            	 recvingMsg = new String( receivePacket.getData());
 	            } 
-                catch (Exception e) 
+                catch (SocketException e) 
                 {
                     e.printStackTrace();
                     setStopLoop(-3,e.toString());
-                }
+                } catch (IOException e) {
+					// TODO Auto-generated catch block
+                	 setStopLoop(-3,e.toString());
+				}
             }
 
-			private void sendMsg() {
+			private void sendMsg()  {
 
                 try 
                 {
@@ -141,11 +172,14 @@ public class Udpclient {
                     ds.setBroadcast(true);
                     ds.send(dp);
                 } 
-                catch (Exception e) 
+                catch (SocketException e) 
                 {
                     e.printStackTrace();
                     setStopLoop(-4,e.toString());
                 }
+                catch (IOException e) {
+                	setStopLoop(-4,e.toString());
+				}
                
                 
 			}
