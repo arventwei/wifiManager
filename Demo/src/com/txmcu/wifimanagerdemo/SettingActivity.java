@@ -81,8 +81,11 @@ public class SettingActivity extends Activity implements XinOperations,
 			progress.dismiss();
 		}
 		Log.i(TAG, "configResult result"+type);
-		XiaoxinInfo info = new XiaoxinInfo();
-		MainActivity.scannlist.add(info);
+		if(type == ConfigType.Succeed)
+		{
+			XiaoxinInfo info = new XiaoxinInfo();
+			MainActivity.scannlist.add(info);
+		}
 		finish();
 	}
 	int cooldown = 120;
