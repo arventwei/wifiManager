@@ -3,9 +3,9 @@ package com.txmcu.wifimanagerdemo;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.R.integer;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.txmcu.xiaoxin.XinStateManager;
 import com.txmcu.xiaoxin.XinStateManager.ConfigType;
@@ -44,7 +45,15 @@ public class SettingActivity extends Activity implements XinOperations,
 		xinMgr = XinStateManager.getInstance(this, this);
 		xinMgr.Init();
 
-		progress = ProgressDialog.show(this, "设置", "初始化配置", true);
+		progress = ProgressDialog.show(this, "设置", "初始化配置", true,true,new DialogInterface.OnCancelListener(){
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                //YourTask.this.cancel(true);
+            	//if(task!=null)
+            	//	task.cancel();
+                finish();
+            }
+        });
 		
 	}
 
@@ -60,6 +69,7 @@ public class SettingActivity extends Activity implements XinOperations,
 	@Override
 	public void initResult(boolean result, String SSID) {
 		// TODO Auto-generated method stub
+		Log.i(TAG, "init result"+SSID);
 		progress.dismiss();
 		progress = null;
 		editSSIDEditText.setText(SSID);
@@ -71,6 +81,8 @@ public class SettingActivity extends Activity implements XinOperations,
 		if (progress != null) {
 			progress.dismiss();
 		}
+		Log.i(TAG, "configResult result"+type);
+		finish();
 	}
 	int cooldown = 120;
 	@Override
@@ -79,13 +91,28 @@ public class SettingActivity extends Activity implements XinOperations,
 		if (v.getId() == R.id.back_img) {
 			finish();
 		} else if (v.getId() == R.id.btnconfig) {
-			progress = ProgressDialog.show(this, "设置", "开始连接设备 剩余120秒", true);
+			progress = ProgressDialog.show(this, "设置", "开始连接设备 剩余120秒", true,true,new DialogInterface.OnCancelListener(){
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    //YourTask.this.cancel(true);
+                	if(task!=null)
+                		task.cancel();
+                    finish();
+                }
+            });
 			xinMgr.Config(editSSIDEditText.getText().toString(),
 					editPwdEditText.getText().toString());
 			cooldown = 120;
 			timer.schedule(task, 1000,1000);
+			Log.i(TAG, "start config");
 		}
 
+	}
+	
+	@Override
+	public void onBackPressed()
+	{
+	    finish();
 	}
 
 	private final Timer timer = new Timer();
@@ -97,8 +124,19 @@ public class SettingActivity extends Activity implements XinOperations,
 			// 要做的事情
 			if (msg.what ==1) {
 				cooldown--;
-				Log.i(TAG, "PROGRESS");
-				progress.setMessage("开始连接设备 剩余"+cooldown+"秒");
+				if(cooldown<0)
+				{
+					progress.dismiss();
+					if(task!=null)
+						task.cancel();
+					//Toast.makeText(SettingActivity.this, "设置失败", Toast.LENGTH_LONG).show();
+					finish();
+				}
+				else {
+					progress.setMessage("开始连接设备 剩余"+cooldown+"秒");
+				}
+				//Log.i(TAG, "PROGRESS");
+				
 			}
 			super.handleMessage(msg);
 		}

@@ -94,6 +94,8 @@ implements OnClickListener,WifiBroadCastOperations{
 			//	Log.i(TAG, "out  onItemClick() SSID= " + result.SSID);
 			}
 		});
+		
+		startActivity(new Intent(this, AddDeviceActivity.class));
 	}
 
 	
@@ -128,7 +130,8 @@ implements OnClickListener,WifiBroadCastOperations{
 			//wifiHotM.scanWifiHot();
 		}
 		else if (v.getId()==R.id.xiaoxin) {
-			startActivity(new Intent(this, SettingActivity.class));
+			startActivity(new Intent(this, AddDeviceActivity.class));
+			//startActivity(new Intent(this, SettingActivity.class));
 			//wifiHotM.connectToHotpot("xiaoxin_AP",  "xiaoxinap");
 			//wifiHotM.scanWifiHot();
 		}	

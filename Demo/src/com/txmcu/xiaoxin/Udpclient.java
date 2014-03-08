@@ -32,7 +32,7 @@ public class Udpclient {
 	}
 	
 	
-	UdpclientOperations operations;
+	public UdpclientOperations operations;
 	//public Context contentView;
 	private static String TAG = "Udpclient";
 	public byte[] send_msg = new byte[100];
@@ -72,9 +72,9 @@ public class Udpclient {
 		}
     	else if (stateCode<0) {
 			operations.setState(false,excpetion);
-		} {
-			
-		}
+	    	if(async_cient!=null)
+	    		async_cient.cancel(false);
+		} 
     	//Toast.makeText(getapp, text, duration)
     	//Toast.makeText(contentView, log	, Toast.LENGTH_LONG).show();
     }
@@ -174,7 +174,7 @@ public class Udpclient {
                 } 
                 catch (SocketException e) 
                 {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                     setStopLoop(-4,e.toString());
                 }
                 catch (IOException e) {

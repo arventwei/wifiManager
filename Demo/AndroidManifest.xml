@@ -25,7 +25,12 @@
         
          <activity
             android:name="com.txmcu.wifimanagerdemo.SettingActivity"
-            android:configChanges="keyboardHidden|orientation" />
+            android:configChanges="keyboardHidden|orientation"
+            android:noHistory="true" />
+          <activity
+            android:name="com.txmcu.wifimanagerdemo.AddDeviceActivity"
+            android:configChanges="keyboardHidden|orientation"
+            />
     </application>
     
          

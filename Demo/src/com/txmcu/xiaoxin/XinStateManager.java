@@ -73,12 +73,13 @@ implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
 	{
 		wifiHotM.scanWifiHot();
 		udpclient = new Udpclient();
+		udpclient.operations= this;
 		//backupCurrentWifiState();
 	}
 	public void Config(String SSID,String Pwd)
 	{
 		wifibackupPwd = Pwd;
-		wifiHotM.connectToHotpot(SSID, Pwd);
+		wifiHotM.connectToHotpot("xiaoxin_AP", "xiaoxinap");
 	}
 	public void Destroy()
 	{
@@ -90,14 +91,14 @@ implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
 		XinStateManager.destroy();
 		
 	}
-	int wifibackupNetId;
+	int wifibackupNetId=-1;
 	String wifibackupSSID;
 	String wifibackupChannel;
 	String wifibackupPwd;
 	String wifibackupAuthMode;
 	String wifibackupEncrypType;
 	private void backupCurrentWifiState(WifiInfo info,List<ScanResult> scannlist ) {
-		wifibackupNetId=0;
+		wifibackupNetId=-1;
 		wifibackupSSID="";
 		if (info!=null) {
 			wifibackupNetId = info.getNetworkId();
@@ -122,7 +123,8 @@ implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
 		}
 	}
 	private void restoreCurrentWifiState() {
-		wifiHotM.enableNetWorkById(wifibackupNetId);
+		if(wifibackupNetId!=-1)
+			wifiHotM.enableNetWorkById(wifibackupNetId);
 	}
 	// wifi 热点扫描回调
 	@Override
@@ -148,7 +150,7 @@ implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
 	public boolean disPlayWifiConResult(boolean result, WifiInfo wifiInfo) {
 
 		Log.i(TAG, "热点连接回调函数");
-		
+		wifiHotM.unRegisterWifiConnectBroadCast();
 		udpclient.setSendWifiInfo(wifibackupSSID, wifibackupPwd,
 				wifibackupAuthMode, wifibackupEncrypType, wifibackupChannel);
 		
