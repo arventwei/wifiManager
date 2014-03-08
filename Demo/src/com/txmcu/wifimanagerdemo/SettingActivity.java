@@ -15,7 +15,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.txmcu.xiaoxin.XinStateManager;
 import com.txmcu.xiaoxin.XinStateManager.ConfigType;
@@ -82,6 +81,8 @@ public class SettingActivity extends Activity implements XinOperations,
 			progress.dismiss();
 		}
 		Log.i(TAG, "configResult result"+type);
+		XiaoxinInfo info = new XiaoxinInfo();
+		MainActivity.scannlist.add(info);
 		finish();
 	}
 	int cooldown = 120;

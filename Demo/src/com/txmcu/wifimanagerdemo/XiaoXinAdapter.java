@@ -3,19 +3,20 @@ package com.txmcu.wifimanagerdemo;
 import java.util.List;
 
 import android.content.Context;
-import android.net.wifi.ScanResult;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class WifiHotAdapter extends BaseAdapter {
+public class XiaoXinAdapter extends BaseAdapter {
 
-	public List<ScanResult> mResults;
+
+	
+	public List<XiaoxinInfo> mResults;
 
 	private Context mContext;
 
-	public WifiHotAdapter(List<ScanResult> results, Context mContext) {
+	public XiaoXinAdapter(List<XiaoxinInfo> results, Context mContext) {
 
 		this.mResults = results;
 		this.mContext = mContext;
@@ -52,13 +53,13 @@ public class WifiHotAdapter extends BaseAdapter {
 		}
 		nameTxt = (TextView) convertView.findViewById(R.id.hotName);
 		levelTxt = (TextView) convertView.findViewById(R.id.hotLevel);
-		nameTxt.setText(mResults.get(position).SSID);
-		levelTxt.setText("Level :" + mResults.get(position).level);
+		nameTxt.setText(mResults.get(position).nameString);
+		levelTxt.setText("Level :" + mResults.get(position).deviceId);
 		System.out.println("out getView()");
 		return convertView;
 	}
 
-	public void refreshData(List<ScanResult> results) {
+	public void refreshData(List<XiaoxinInfo> results) {
 		System.out.println("into refreshData(List<ScanResult> results) results.size =" + results.size());
 		this.mResults = results;
 		this.notifyDataSetChanged();
