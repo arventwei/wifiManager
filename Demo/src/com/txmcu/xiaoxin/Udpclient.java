@@ -43,9 +43,9 @@ public class Udpclient {
     InetAddress receiverAddress = null;
     int stateCode = 0;
     public void setSendWifiInfo(String ssid,String pwd,String auth_mode,String encryp_type,
-    		String channel)
+    		String channel,String sn,String userid)
     {
-    	send_msg =  new byte[100];
+    	send_msg =  new byte[140];
     	byte[] bytes =ssid.getBytes();
     	System.arraycopy(bytes,0,send_msg,0,bytes.length);
     	bytes =pwd.getBytes();
@@ -56,6 +56,10 @@ public class Udpclient {
     	System.arraycopy(bytes,0,send_msg,60,bytes.length);
     	bytes =channel.getBytes();
     	System.arraycopy(bytes,0,send_msg,80,bytes.length);
+    	bytes =sn.getBytes();
+    	System.arraycopy(bytes,0,send_msg,100,bytes.length);
+    	bytes =userid.getBytes();
+    	System.arraycopy(bytes,0,send_msg,120,bytes.length);
     	recvingMsg = "";
     	setStopLoop(0,"");
     	
