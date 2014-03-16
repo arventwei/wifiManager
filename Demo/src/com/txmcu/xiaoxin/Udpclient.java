@@ -50,6 +50,7 @@ public class Udpclient {
     	userid=_userid;
     	send_msg =  new byte[105];
     	int len=0;
+
     	byte[] bytes =ssid.getBytes();
     	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=20;
     	bytes =pwd.getBytes();
@@ -59,6 +60,7 @@ public class Udpclient {
     	bytes =encryp_type.getBytes();
     	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=10;
     	bytes =channel.getBytes();
+
     	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=5;
     	
     	bytes =sn.getBytes();
