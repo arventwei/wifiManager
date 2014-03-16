@@ -61,6 +61,7 @@ public class Udpclient {
     	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=10;
     	bytes =channel.getBytes();
 
+
     	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=5;
     	
     	bytes =sn.getBytes();
@@ -68,6 +69,7 @@ public class Udpclient {
     	
     	bytes =userid.getBytes();
     	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=20;
+
     	recvingMsg = "";
     	setStopLoop(0,"");
     	

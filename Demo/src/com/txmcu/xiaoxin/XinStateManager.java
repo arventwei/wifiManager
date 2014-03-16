@@ -159,6 +159,7 @@ implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
 		Log.i(TAG, "热点连接回调函数");
 		wifiHotM.unRegisterWifiConnectBroadCast();
 
+
 		if(mCurState == State.Config)
 		{
 			udpclient.setSendWifiInfo(wifibackupSSID, wifibackupPwd,
