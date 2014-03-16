@@ -43,19 +43,26 @@ public class Udpclient {
     InetAddress receiverAddress = null;
     int stateCode = 0;
     public void setSendWifiInfo(String ssid,String pwd,String auth_mode,String encryp_type,
-    		String channel)
+    		String channel,String sn,String userid)
     {
-    	send_msg =  new byte[100];
+    	send_msg =  new byte[105];
+    	int len=0;
     	byte[] bytes =ssid.getBytes();
-    	System.arraycopy(bytes,0,send_msg,0,bytes.length);
+    	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=20;
     	bytes =pwd.getBytes();
-    	System.arraycopy(bytes,0,send_msg,20,bytes.length);
+    	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=20;
     	bytes =auth_mode.getBytes();
-    	System.arraycopy(bytes,0,send_msg,40,bytes.length);
+    	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=10;
     	bytes =encryp_type.getBytes();
-    	System.arraycopy(bytes,0,send_msg,60,bytes.length);
+    	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=10;
     	bytes =channel.getBytes();
-    	System.arraycopy(bytes,0,send_msg,80,bytes.length);
+    	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=5;
+    	
+    	bytes =sn.getBytes();
+    	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=20;
+    	
+    	bytes =userid.getBytes();
+    	System.arraycopy(bytes,0,send_msg,len,bytes.length);len+=20;
     	recvingMsg = "";
     	setStopLoop(0,"");
     	

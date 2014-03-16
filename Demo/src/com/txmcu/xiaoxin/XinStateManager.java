@@ -152,7 +152,7 @@ implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
 		Log.i(TAG, "热点连接回调函数");
 		wifiHotM.unRegisterWifiConnectBroadCast();
 		udpclient.setSendWifiInfo(wifibackupSSID, wifibackupPwd,
-				wifibackupAuthMode, wifibackupEncrypType, wifibackupChannel);
+				wifibackupAuthMode, wifibackupEncrypType, wifibackupChannel,"111222","sina_aaa");
 		
 		udpclient.Looper();
 		return false;
