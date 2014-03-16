@@ -8,15 +8,14 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import com.txmcu.xiaoxin.XinStateManager.ConfigType;
-
-import android.R.integer;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 //import android.widget.Toast;
 
 public class Udpclient {
@@ -35,16 +34,20 @@ public class Udpclient {
 	public UdpclientOperations operations;
 	//public Context contentView;
 	private static String TAG = "Udpclient";
-	public byte[] send_msg = new byte[100];
+	public byte[] send_msg ;
 	 private AsyncTask<Void, Void, Void> async_cient;
     
     public String recvingMsg;
     DatagramSocket ds = null;
     InetAddress receiverAddress = null;
     int stateCode = 0;
+    String sn;
+    String userid;
     public void setSendWifiInfo(String ssid,String pwd,String auth_mode,String encryp_type,
-    		String channel,String sn,String userid)
+    		String channel,String _sn,String _userid)
     {
+    	sn = _sn;
+    	userid=_userid;
     	send_msg =  new byte[105];
     	int len=0;
     	byte[] bytes =ssid.getBytes();
@@ -114,9 +117,10 @@ public class Udpclient {
             	{
             		sendMsg();
 
-            		//receMsg();
+            		receMsg();
             		if(recvingMsg.startsWith("receive"))
             		{
+            			//TODO RESTORE WIFI
             			setStopLoop(1,"");
             		}
 
@@ -132,14 +136,32 @@ public class Udpclient {
             	}
             	while(stateCode==1)
             	{
-            		receMsg();
-            		if(recvingMsg.startsWith("Ok")
-            		   ||recvingMsg.startsWith("Fail"))
-            		{
-            			setStopLoop(2,recvingMsg);
-            		}
+            		
+            		 RequestParams post_params = new RequestParams();
+            		 post_params.put("userid", userid);
+            		 post_params.put("sn", sn);
+            		
+            		 AsyncHttpClient client = new AsyncHttpClient();
+            		 client.post("http://211.103.161.120:9999/mobile/bind", post_params, 
+            				new AsyncHttpResponseHandler() {
+	            			@Override
+	            			public void onSuccess(String response) {
+	            			 	System.out.println(response);
+	            			 	
+	            			 		setStopLoop(2,response);
+            			  		}
+	            			
+	            	  
+            		 		});
+            		 
+//            		receMsg();
+//            		if(recvingMsg.startsWith("Ok")
+//            		   ||recvingMsg.startsWith("Fail"))
+//            		{
+//            			setStopLoop(2,recvingMsg);
+//            		}
             		try {
-						Thread.sleep(1000);
+						Thread.sleep(2000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

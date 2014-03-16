@@ -1,27 +1,11 @@
 package com.txmcu.wifimanagerdemo;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import com.txmcu.WifiManager.Global;
-import com.txmcu.WifiManager.WifiHotManager;
-import com.txmcu.WifiManager.WifiHotManager.OpretionsType;
-import com.txmcu.WifiManager.WifiHotManager.WifiBroadCastOperations;
-import com.txmcu.xiaoxin.Udpclient;
 
 public class AddDeviceActivity extends Activity 
 implements OnClickListener{

@@ -2,20 +2,15 @@ package com.txmcu.xiaoxin;
 
 import java.util.List;
 
-import android.R.integer;
 import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.util.Log;
-import android.view.View.OnClickListener;
 
 import com.txmcu.WifiManager.Global;
-import com.txmcu.WifiManager.WifiHotAdmin;
 import com.txmcu.WifiManager.WifiHotManager;
 import com.txmcu.WifiManager.WifiHotManager.OpretionsType;
 import com.txmcu.WifiManager.WifiHotManager.WifiBroadCastOperations;
-import com.txmcu.wifimanagerdemo.MainActivity;
 
 public class XinStateManager 
 implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
@@ -35,6 +30,12 @@ implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
 	//	Failed_TimeOut,
 		//Failed_XiaoXinConfig
 	}
+	public enum State
+	{
+		Init,
+		Config,
+	}
+	public State mCurState = State.Init;
 	public static int TimeOutSecond = 120;
 	
 	public static interface XinOperations {
@@ -71,6 +72,7 @@ implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
 	
 	public void Init()
 	{
+		mCurState = State.Init;
 		wifiHotM.scanWifiHot();
 		udpclient = new Udpclient();
 		udpclient.operations= this;
@@ -78,6 +80,7 @@ implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
 	}
 	public void Config(String SSID,String Pwd)
 	{
+		mCurState = State.Config;
 		wifibackupPwd = Pwd;
 		wifiHotM.connectToHotpot("xiaoxin_AP", "xiaoxinap");
 	}
@@ -132,13 +135,17 @@ implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
 
 		wifiHotM.unRegisterWifiScanBroadCast();
 		Log.i(TAG, " 热点扫描结果 ： = " + wifiList);
-		backupCurrentWifiState(wifiHotM.getConnectWifiInfo(),wifiList);
-		if (wifibackupSSID.length()==0) {
-			operations.initResult(false,"");
+		if(mCurState == State.Init)
+		{
+			backupCurrentWifiState(wifiHotM.getConnectWifiInfo(),wifiList);
+			if (wifibackupSSID.length()==0) {
+				operations.initResult(false,"");
+			}
+			else {
+				operations.initResult(true,wifibackupSSID);
+			}
 		}
-		else {
-			operations.initResult(true,wifibackupSSID);
-		}
+		
 		
 		
 		
@@ -151,10 +158,13 @@ implements WifiBroadCastOperations , Udpclient.UdpclientOperations{
 
 		Log.i(TAG, "热点连接回调函数");
 		wifiHotM.unRegisterWifiConnectBroadCast();
-		udpclient.setSendWifiInfo(wifibackupSSID, wifibackupPwd,
-				wifibackupAuthMode, wifibackupEncrypType, wifibackupChannel,"111222","sina_aaa");
-		
-		udpclient.Looper();
+		if(mCurState == State.Config)
+		{
+			udpclient.setSendWifiInfo(wifibackupSSID, wifibackupPwd,
+					wifibackupAuthMode, wifibackupEncrypType, wifibackupChannel,"111222","sina_aaa");
+			
+			udpclient.Looper();
+		}
 		return false;
 	}
 

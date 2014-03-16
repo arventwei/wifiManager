@@ -3,12 +3,10 @@ package com.txmcu.WifiManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.R.integer;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiConfiguration.KeyMgmt;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;

@@ -3,26 +3,19 @@ package com.txmcu.wifimanagerdemo;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
 import android.app.Activity;
 import android.content.Intent;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
-
-import com.txmcu.WifiManager.Global;
-import com.txmcu.WifiManager.WifiHotManager;
-import com.txmcu.WifiManager.WifiHotManager.OpretionsType;
-import com.txmcu.WifiManager.WifiHotManager.WifiBroadCastOperations;
-import com.txmcu.xiaoxin.Udpclient;
 
 public class MainActivity extends Activity 
 implements OnClickListener{
@@ -53,7 +46,7 @@ implements OnClickListener{
 		listView = (ListView) findViewById(R.id.devicelist);
 		((Button)findViewById(R.id.xiaoxin)).setOnClickListener(this);
 
-		
+		((Button)findViewById(R.id.testhttp)).setOnClickListener(this);
 		//client = new udpclient();
 		//WifiInfo wi =wifiHotM.getConnectWifiInfo();
 		
@@ -96,6 +89,21 @@ implements OnClickListener{
 			//wifiHotM.connectToHotpot("xiaoxin_AP",  "xiaoxinap");
 			//wifiHotM.scanWifiHot();
 		}	
+	 else if(v.getId()==R.id.testhttp){
+		 RequestParams post_params = new RequestParams();
+		 post_params.put("userid", "james");
+		 post_params.put("sn", "123456");
+		
+		 AsyncHttpClient client = new AsyncHttpClient();
+		 client.post("http://211.103.161.120:9399/mobile/bind", post_params, 
+				new AsyncHttpResponseHandler() {
+    			@Override
+    			public void onSuccess(String response) {
+    			 	System.out.println(response);
+    			 	//setStopLoop(2,"Ok");
+			  		}
+		 		});
+	 }
 		
 	}
 	public static List<XiaoxinInfo> scannlist = new ArrayList<XiaoxinInfo>();
